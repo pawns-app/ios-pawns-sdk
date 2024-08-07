@@ -91,10 +91,6 @@ internal extension Device {
 
 internal extension Device {
     
-    static func productName() -> String {
-        "pawnsapp-ios" // ??
-    }
-    
     static func model() -> String {
         
         var systemInfo = utsname()
