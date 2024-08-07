@@ -1,0 +1,8 @@
+framework module "Mobile_sdk" {
+	header "ref.h"
+    header "Mobile_sdk.objc.h"
+    header "Universe.objc.h"
+    header "Mobile_sdk.h"
+
+    export *
+}
