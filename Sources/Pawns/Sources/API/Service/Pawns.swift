@@ -22,10 +22,12 @@ public class Pawns: NSObject, Mobile_sdkEventCallbackProtocol {
         
         guard apiKey != nil else { return }
         
-        Mobile_sdkInitialize(
-            Device.id(),
-            Device.model()
-        )
+        DispatchQueue.global(qos: .background).async {
+            Mobile_sdkInitialize(
+                Device.id(),
+                Device.model()
+            )
+        }
     }
     
     public static func setup(apiKey: String) {
@@ -107,7 +109,11 @@ public extension Pawns {
     }
     
     private func stopRoutine() {
-        Mobile_sdkStopMainRoutine()
+        
+        DispatchQueue.global(qos: .background).async {
+            Mobile_sdkStopMainRoutine()
+        }
+        
         Pawns.subject.send(.notRunning(.stopped))
         self.isRunning = false
         self.processTask.destroy()
@@ -136,7 +142,9 @@ private extension Pawns {
             case .satisfied:
                 guard !isRunning else { return }
                 self.isRunning = true
-                Mobile_sdkStartMainRoutine(self.apiKey, self)
+                DispatchQueue.global(qos: .background).async {
+                    Mobile_sdkStartMainRoutine(self.apiKey, self)
+                }
             }
         }
     }
@@ -161,10 +169,17 @@ private extension Pawns {
     }
     
     func onReconnect(continuation: AsyncStream<Pawns.Status>.Continuation) async {
-        Mobile_sdkStopMainRoutine()
+        
+        DispatchQueue.global(qos: .background).async {
+            Mobile_sdkStopMainRoutine()
+        }
+        
         continuation.yield(.reconnecting)
+        
         for await reconnect in await self.reconnection.start() {
-            Mobile_sdkStartMainRoutine(self.apiKey, self)
+            DispatchQueue.global(qos: .background).async {
+                Mobile_sdkStartMainRoutine(self.apiKey, self)
+            }
         }
     }
     
