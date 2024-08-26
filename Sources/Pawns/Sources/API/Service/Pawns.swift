@@ -102,6 +102,8 @@ public extension Pawns {
                         await self.onStatusChange(continuation: continuation)
                     }
                 }
+                
+                continuation.onTermination = { _ in continuation.finish() }
             }
         }
     }
