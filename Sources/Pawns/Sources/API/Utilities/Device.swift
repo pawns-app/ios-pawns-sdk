@@ -26,9 +26,7 @@ internal class Device: NSObject {
                 continuation.yield($0)
             }
             
-            continuation.onTermination = { continuation in
-                cancellable.cancel()
-            }
+            continuation.onTermination = { _ in continuation.finish() }
         }
     }
     

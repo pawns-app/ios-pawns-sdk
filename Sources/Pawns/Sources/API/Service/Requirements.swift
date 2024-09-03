@@ -57,6 +57,7 @@ internal extension Pawns {
                             }
                         }
 
+                        continuation.onTermination = { _ in continuation.finish() }
                     }
                 }
             }

@@ -51,6 +51,7 @@ internal class Network {
             
             continuation.onTermination = { [weak self] _ in
                 self?.pathMonitor?.cancel()
+                continuation.finish()
             }
             
             self?.pathMonitor?.start(queue: DispatchQueue(label: "NSPathMonitor.paths"))

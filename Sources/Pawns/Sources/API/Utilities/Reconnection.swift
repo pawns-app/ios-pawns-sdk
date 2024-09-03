@@ -22,6 +22,7 @@ internal class Reconnection: NSObject {
                 self.stop()
             }
             
+            continuation.onTermination = { _ in continuation.finish() }
         }
     }
     

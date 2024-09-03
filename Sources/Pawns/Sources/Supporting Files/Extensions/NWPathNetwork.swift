@@ -13,6 +13,7 @@ internal extension NWPathMonitor {
             
             continuation.onTermination = { [weak self] _ in
                 self?.cancel()
+                continuation.finish()
             }
             
             start(queue: DispatchQueue(label: "NSPathMonitor.paths"))
