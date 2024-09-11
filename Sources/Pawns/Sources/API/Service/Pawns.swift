@@ -48,6 +48,7 @@ public class Pawns: NSObject, Mobile_sdkEventCallbackProtocol {
     private var processTask: Task<(), Never>? = nil
     
     private var isRunning: Bool = false
+    private var isReconnecting: Bool = false
     private var status: Pawns.Status = .unknown
     
 }
@@ -136,7 +137,7 @@ private extension Pawns {
                 battery.serviceStatus.flatMap(Pawns.subject.send)
                 
             case .satisfied:
-                guard !isRunning else { return }
+                guard !isRunning && !isReconnecting else { return }
                 self.isRunning = true
                 Mobile_sdkStartMainRoutine(self.apiKey, self)
             }
@@ -153,8 +154,10 @@ private extension Pawns {
             
             if case let .notRunning(reason) = status {
                 if reason.isCritical {
+                    self.isReconnecting = true
                     Task { await self.onReconnect(continuation: continuation) }
                 }
+                
                 continuation.yield(status)
             } else {
                 continuation.yield(status)
@@ -167,6 +170,7 @@ private extension Pawns {
         continuation.yield(.reconnecting)
         for await reconnect in await self.reconnection.start() {
             Mobile_sdkStartMainRoutine(self.apiKey, self)
+            self.isReconnecting = false
         }
     }
     
