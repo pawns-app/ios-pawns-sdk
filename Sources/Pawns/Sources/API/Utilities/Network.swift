@@ -16,6 +16,7 @@ internal class Network {
     internal enum Status {
         case undefined
         case unsatisfied
+        case detectedVPNInterfaceType
         case missingInterfaceType
         case satisfied
     }
@@ -30,9 +31,13 @@ internal class Network {
         
         self.pathMonitor = .init()
         
-        return AsyncStream { [weak self] continuation in
+        return AsyncStream { [unowned self] continuation in
             
-            self?.pathMonitor?.pathUpdateHandler = { path in
+            self.pathMonitor?.pathUpdateHandler = { path in
+                                
+                if self.isVPNConnected() {
+                    continuation.yield(.detectedVPNInterfaceType); return
+                }
                 
                 guard path.status == .satisfied else {
                     continuation.yield(.unsatisfied); return
@@ -49,18 +54,35 @@ internal class Network {
                 continuation.yield(status)
             }
             
-            continuation.onTermination = { [weak self] _ in
-                self?.pathMonitor?.cancel()
+            continuation.onTermination = { [unowned self] _ in
+                self.pathMonitor?.cancel()
                 continuation.finish()
             }
             
-            self?.pathMonitor?.start(queue: DispatchQueue(label: "NSPathMonitor.paths"))
+            self.pathMonitor?.start(queue: DispatchQueue(label: "NSPathMonitor.paths"))
         }
     }
     
     internal func stop() async {
         self.pathMonitor?.cancel()
         self.pathMonitor = nil
+    }
+    
+    // MARK: - VPN
+    
+    private func isVPNConnected() -> Bool {
+        
+        let cfDict = CFNetworkCopySystemProxySettings()
+        let nsDict = cfDict?.takeRetainedValue() as NSDictionary?
+        let keys = nsDict?["__SCOPED__"] as? NSDictionary
+        
+        for key: String in keys?.allKeys as? [String] ?? [] {
+            if (key.contains("tap") || key.contains("tun") || key.contains("ppp") || key.contains("ipsec") || key.contains("utun")) {
+                return true
+            }
+        }
+        
+        return false
     }
     
 }

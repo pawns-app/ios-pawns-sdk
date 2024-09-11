@@ -16,6 +16,7 @@ internal extension Pawns {
             case satisfied
             
             enum Network {
+                case detectedVPNInterfaceType
                 case missingInterfaceType
                 case wrongInterfaceType
             }
@@ -93,6 +94,9 @@ private extension Pawns.Requirements {
     func observeNetworkStatus(_ callback: @escaping (Reason) -> Void) async {
         for await status in await self.network.start() {
             switch status {
+            case .detectedVPNInterfaceType:
+                callback(.network(.detectedVPNInterfaceType))
+                
             case .unsatisfied:
                 callback(.network(.missingInterfaceType))
                 
@@ -133,6 +137,8 @@ internal extension Pawns.Requirements.Reason.Network {
             return .notRunning(.connectionFailed)
         case .wrongInterfaceType:
             return .notRunning(.waitingForWifi)
+        case .detectedVPNInterfaceType:
+            return .notRunning(.detectedVPN)
         default:
             return nil
         }

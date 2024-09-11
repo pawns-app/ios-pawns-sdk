@@ -16,6 +16,7 @@ public extension Pawns.Status {
         case waitingForWifi
         case lowBattery
         case unsupportedVersion
+        case detectedVPN
         
         init?(rawValue: Pawns.Event) {
             switch rawValue.parameters.error {
@@ -53,7 +54,8 @@ public extension Pawns.Status {
                 Self.cantOpenPort,
                 Self.lowBattery,
                 Self.couldNotMarkPeerAlive,
-                Self.connectionFailed
+                Self.connectionFailed,
+                Self.detectedVPN
             ]
             .contains(self)
         }
