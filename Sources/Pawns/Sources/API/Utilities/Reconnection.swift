@@ -16,10 +16,14 @@ internal class Reconnection: NSObject {
         return AsyncStream { [unowned self] continuation in
                 
             self.timerTask = Task { [unowned self] in
-                await try! Task.sleep(nanoseconds: self.deadline)
-                guard !Task.isCancelled else { return }
-                continuation.yield(())
-                self.stop()
+                do {
+                    await try Task.sleep(nanoseconds: self.deadline)
+                    guard !Task.isCancelled else { return }
+                    continuation.yield(())
+                    self.stop()
+                } catch {
+                    self.stop()
+                }
             }
             
             continuation.onTermination = { _ in continuation.finish() }
