@@ -3,7 +3,7 @@ import Foundation
 internal class Reconnection: NSObject {
     
     private var timerTask: Task<(), Never>? = nil
-    private let deadline: UInt64 = 30_000_000_000
+    private static let deadline: UInt64 = 30_000_000_000
 
     internal override init() { /* - */ }
     
@@ -13,16 +13,16 @@ internal class Reconnection: NSObject {
         
         Pawns.log(named: "reconnecting in 30 seconds...")
         
-        return AsyncStream { [unowned self] continuation in
+        return AsyncStream { [weak self] continuation in
                 
-            self.timerTask = Task { [unowned self] in
+            self?.timerTask = Task { [weak self] in
                 do {
-                    await try Task.sleep(nanoseconds: self.deadline)
+                    try await Task.sleep(nanoseconds: Reconnection.deadline)
                     guard !Task.isCancelled else { return }
                     continuation.yield(())
-                    self.stop()
+                    self?.stop()
                 } catch {
-                    self.stop()
+                    self?.stop()
                 }
             }
             
