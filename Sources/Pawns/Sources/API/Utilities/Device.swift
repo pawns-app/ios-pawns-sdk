@@ -18,9 +18,11 @@ internal class Device: NSObject {
         self.observeBatteryState()
         self.observeBatteryLevel()
         
-        return AsyncStream { [unowned self] continuation in
+        return AsyncStream { [weak self] continuation in
             
-            continuation.yield(self.battery)
+            if let battery = self?.battery {
+                continuation.yield(battery)
+            }
             
             let cancellable = Device.batterySubject.sink {
                 continuation.yield($0)

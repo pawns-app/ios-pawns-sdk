@@ -89,18 +89,18 @@ public extension Pawns {
             fatalError("💜 Pawns missing api key.")
         }
         
-        return AsyncStream { [unowned self] continuation in
+        return AsyncStream { [weak self] continuation in
             
-            self.processTask = Task {
+            self?.processTask = Task {
                 
                 await withTaskGroup(of: Void.self) { group in
                     
                     group.addTask {
-                        await self.onRequirementChange()
+                        await self?.onRequirementChange()
                     }
 
                     group.addTask {
-                        await self.onStatusChange(continuation: continuation)
+                        await self?.onStatusChange(continuation: continuation)
                     }
                 }
                 
@@ -145,17 +145,17 @@ private extension Pawns {
     }
     
     func onStatusChange(continuation: AsyncStream<Pawns.Status>.Continuation) async {
-        await self.observePawnsStatus { [unowned self] status in
+        await self.observePawnsStatus { [weak self] status in
             
-            guard self.status != status else { return }
+            guard self?.status != status else { return }
 
             Pawns.log(named: "service status", status)
-            self.status = status
+            self?.status = status
             
             if case let .notRunning(reason) = status {
                 if reason.isCritical {
-                    self.isReconnecting = true
-                    Task { await self.onReconnect(continuation: continuation) }
+                    self?.isReconnecting = true
+                    Task { [weak self] in await self?.onReconnect(continuation: continuation) }
                 }
                 
                 continuation.yield(status)
