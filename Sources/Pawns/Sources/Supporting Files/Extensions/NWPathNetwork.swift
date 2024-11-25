@@ -11,8 +11,8 @@ internal extension NWPathMonitor {
                 continuation.yield(path)
             }
             
-            continuation.onTermination = { [weak self] _ in
-                self?.cancel()
+            continuation.onTermination = { _ in
+                self.cancel()
                 continuation.finish()
             }
             

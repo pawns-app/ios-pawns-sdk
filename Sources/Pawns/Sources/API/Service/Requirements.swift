@@ -38,23 +38,23 @@ internal extension Pawns {
         // MARK: - Requirements
         
         internal func monitorRequirements() async -> AsyncStream<Reason> {
-            AsyncStream { [weak self] continuation in
+            AsyncStream { continuation in
                 
-                Task { [weak self] in
+                Task {
                     
                     await withTaskGroup(of: Void.self) { group in
 
                         group.addTask {
-                            await self?.observeNetworkStatus {
-                                self?.networkReason = $0
-                                self?.onReasonsChange(continuation: continuation)
+                            await self.observeNetworkStatus {
+                                self.networkReason = $0
+                                self.onReasonsChange(continuation: continuation)
                             }
                         }
                         
                         group.addTask {
-                            await self?.observeBatteryStatus {
-                                self?.batteryReason = $0
-                                self?.onReasonsChange(continuation: continuation)
+                            await self.observeBatteryStatus {
+                                self.batteryReason = $0
+                                self.onReasonsChange(continuation: continuation)
                             }
                         }
 

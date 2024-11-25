@@ -31,11 +31,11 @@ internal class Network {
         
         self.pathMonitor = .init()
         
-        return AsyncStream { [weak self] continuation in
+        return AsyncStream { continuation in
             
-            self?.pathMonitor?.pathUpdateHandler = { [weak self] path in
+            self.pathMonitor?.pathUpdateHandler = { path in
                                 
-                if self?.isVPNConnected() ?? false {
+                if self.isVPNConnected() {
                     continuation.yield(.detectedVPNInterfaceType); return
                 }
                 
@@ -54,12 +54,12 @@ internal class Network {
                 continuation.yield(status)
             }
             
-            continuation.onTermination = { [weak self] _ in
-                self?.pathMonitor?.cancel()
+            continuation.onTermination = { _ in
+                self.pathMonitor?.cancel()
                 continuation.finish()
             }
             
-            self?.pathMonitor?.start(queue: DispatchQueue(label: "NSPathMonitor.paths"))
+            self.pathMonitor?.start(queue: DispatchQueue(label: "NSPathMonitor.paths"))
         }
     }
     
