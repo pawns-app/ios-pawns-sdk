@@ -7,7 +7,7 @@ public extension Pawns {
         case unknown
         case starting
         case reconnecting
-        case running
+        case running(trafic: Int)
         case notRunning(Reason)
         
         init?(rawValue: Pawns.Event) {
@@ -17,7 +17,13 @@ public extension Pawns {
             case "reconnecting":
                 self = .reconnecting
             case "running":
-                self = .running
+                self = .running(trafic: .zero)
+            case "traffic":
+                if let bytesWritten = rawValue.parameters.bytesWritten, let trafic = Int(bytesWritten) {
+                    self = .running(trafic: trafic)
+                } else {
+                    self = .running(trafic: .zero)
+                }
             case "not_running":
                 if let reason = Reason(rawValue: rawValue) {
                     self = .notRunning(reason)
