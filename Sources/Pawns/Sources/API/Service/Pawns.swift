@@ -89,7 +89,7 @@ public extension Pawns {
             fatalError("💜 Pawns missing api key.")
         }
         
-        return AsyncStream { [unowned self] continuation in
+        return AsyncStream { continuation in
             
             self.processTask = Task {
                 
@@ -145,7 +145,7 @@ private extension Pawns {
     }
     
     func onStatusChange(continuation: AsyncStream<Pawns.Status>.Continuation) async {
-        await self.observePawnsStatus { [unowned self] status in
+        await self.observePawnsStatus { status in
             
             guard self.status != status || self.status.isRunning else { return }
                 

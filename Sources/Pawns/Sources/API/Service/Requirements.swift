@@ -38,7 +38,7 @@ internal extension Pawns {
         // MARK: - Requirements
         
         internal func monitorRequirements() async -> AsyncStream<Reason> {
-            AsyncStream { [unowned self] continuation in
+            AsyncStream { continuation in
                 
                 Task {
                     

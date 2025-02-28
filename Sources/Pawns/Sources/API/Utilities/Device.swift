@@ -18,7 +18,7 @@ internal class Device: NSObject {
         self.observeBatteryState()
         self.observeBatteryLevel()
         
-        return AsyncStream { [unowned self] continuation in
+        return AsyncStream { continuation in
             
             continuation.yield(self.battery)
             

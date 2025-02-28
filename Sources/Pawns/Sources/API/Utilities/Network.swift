@@ -31,7 +31,7 @@ internal class Network {
         
         self.pathMonitor = .init()
         
-        return AsyncStream { [unowned self] continuation in
+        return AsyncStream { continuation in
             
             self.pathMonitor?.pathUpdateHandler = { path in
                                 
@@ -54,7 +54,7 @@ internal class Network {
                 continuation.yield(status)
             }
             
-            continuation.onTermination = { [unowned self] _ in
+            continuation.onTermination = { _ in
                 self.pathMonitor?.cancel()
                 continuation.finish()
             }
