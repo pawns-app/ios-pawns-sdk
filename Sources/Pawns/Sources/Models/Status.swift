@@ -19,7 +19,7 @@ public extension Pawns {
             case "running":
                 self = .running(trafic: .zero)
             case "traffic":
-                if let bytesWritten = rawValue.parameters.bytesWritten, let trafic = Int(bytesWritten) {
+                if let bytesWritten = rawValue.parameters.bytes_written, let trafic = Int(bytesWritten) {
                     self = .running(trafic: trafic)
                 } else {
                     self = .running(trafic: .zero)
@@ -37,4 +37,15 @@ public extension Pawns {
         
     }
  
+}
+
+internal extension Pawns.Status {
+    
+    var isRunning: Bool {
+        if case .running = self {
+            return true
+        }
+        return false
+    }
+    
 }

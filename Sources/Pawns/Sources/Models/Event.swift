@@ -13,7 +13,7 @@ internal extension Pawns.Event {
     
     struct Parameters: Codable {
         let error: String?
-        let bytesWritten: String?
+        let bytes_written: String?
     }
     
 }

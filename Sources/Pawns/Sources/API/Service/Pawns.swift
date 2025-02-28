@@ -147,8 +147,8 @@ private extension Pawns {
     func onStatusChange(continuation: AsyncStream<Pawns.Status>.Continuation) async {
         await self.observePawnsStatus { [unowned self] status in
             
-            guard self.status != status else { return }
-
+            guard self.status != status || self.status.isRunning else { return }
+                
             Pawns.log(named: "service status", status)
             self.status = status
             
